@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { data, IItem } from './data';
+import { Theme, ThemeProvider, useTheme } from './Context';
 import './styles.css';
-
-type Theme = 'light' | 'dark';
 
 export function App() {
     const [currentTheme, setCurrentTheme] = useState<Theme>('light');
@@ -15,26 +14,27 @@ export function App() {
     return (
         <div className={className}>
             <button onClick={changeTheme}>Toggle theme</button>
-            <List theme={currentTheme} data={data} />
+            <ThemeProvider
+                theme={currentTheme}
+                children={<List data={data} />}
+            />
         </div>
     );
 }
 
-function List(props: { theme: Theme; data: IItem[] }) {
+function List(props: { data: IItem[] }) {
     return (
         <div>
-            {data.map((item) => (
-                <ListItem
-                    theme={props.theme}
-                    caption={item.name}
-                    key={item.id}
-                />
+            {props.data.map((item) => (
+                <ListItem caption={item.name} key={item.id} />
             ))}
         </div>
     );
 }
 
-function ListItem(props: { theme: Theme; caption: string }) {
-    const className = `listItem listItem_${props.theme}`;
+function ListItem(props: { caption: string }) {
+    const theme = useTheme();
+    const className = `listItem listItem_${theme}`;
+
     return <div className={className}>{props.caption}</div>;
 }
